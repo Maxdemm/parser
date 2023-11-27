@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup as bs
 
-URL = "https://www.work.ua/jobs/?ss=1"
-r = requests.get(URL)
+url = "https://www.work.ua/jobs/?ss=1"
+r = requests.get(url)
 print(r.status_code)
 
 soup = bs(r.text, "html.parser")
