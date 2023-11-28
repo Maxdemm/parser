@@ -1,21 +1,34 @@
 import requests
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup
+def download_url(url):
+    response = requests.get(url)
 
-url = "https://www.work.ua/jobs/?ss=1"
-r = requests.get(url)
-print(r.status_code)
+    if response.status_code == 200:
+        content = response.content.decode('utf-8')
+        print("Downloaded content.")
+        return content
+    else:
+        print(f"Failed to download the page. Status code: {response.status_code}")
+        return None
 
-soup = bs(r.text, "html.parser")
-vacan_names = soup.find_all('h2', class_=True)
-vacan_info = soup.find_all('p', class_="overflow text-muted add-top-sm cut-bottom")
+if __name__ == '__main__':
+    url = "https://www.work.ua/jobs/?ss=1"
+    content = download_url(url)
 
-for i in range(len(vacan_names)):
-    name = vacan_names[i]
-    if name.a and 'title' in name.a.attrs:
-        print(name.a['title'])
-        print('https://www.work.ua' + name.a['href'])
-        info = vacan_info[i]
+    if content is None:
+        print("ERROR: CONTENT_IS_NONE")
+
+    soup = BeautifulSoup(content, 'html.parser')
+    vacancy_names = soup.select('h2 a[title]')
+    vacancy_info = soup.select('p.overflow.text-muted.add-top-sm.cut-bottom')
+
+    for i in range(len(vacancy_names)):
+        name = vacancy_names[i]
+        info = vacancy_info[i]
+        print(name['title'])
+        print('https://www.work.ua' + name['href'])
         print(info.text)
+
         print("_" * 150)
 
 
